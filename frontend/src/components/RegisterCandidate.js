@@ -33,6 +33,7 @@ export default function RegisterCandidate({ contract }) {
     }
   };
 
+  
   return (
     <div style={{ marginTop: "2rem", padding: "1rem", border: "1px solid #ccc" }}>
       <h2>Register Candidate</h2>

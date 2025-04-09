@@ -1,9 +1,9 @@
-// src/App.js
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { CONTRACT_ABI, CONTRACT_ADDRESS } from "./contract-config";
 import RegisterCandidate from "./components/RegisterCandidate";
 import CandidatesList from "./components/CandidateList";
+import RegisterVoter from "./components/RegisterVoter";
 
 function App() {
   const [contract, setContract] = useState(null);
@@ -13,17 +13,25 @@ function App() {
     const init = async () => {
       if (window.ethereum) {
         try {
-          // Request access to MetaMask accounts
           await window.ethereum.request({ method: "eth_requestAccounts" });
-          const provider = new ethers.BrowserProvider(window.ethereum); // Ethers v6 style
+          const provider = new ethers.BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
           const address = await signer.getAddress();
+          const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+          
+          setContract(contract);
           setAccount(address);
-
-          // Create an instance of the contract
-          const votingContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-          setContract(votingContract);
-          console.log("✅ Connected to contract:", votingContract);
+          console.log("✅ Connected account:", address);
+          
+          // Check admin from contract
+          const deployedAdmin = await contract.admin();
+          console.log("Admin from contract:", deployedAdmin);
+          
+          if (address.toLowerCase() === deployedAdmin.toLowerCase()) {
+            console.log("You are the admin!");
+          } else {
+            console.warn("You are NOT the admin. Admin is:", deployedAdmin);
+          }
         } catch (err) {
           console.error("Connection error:", err);
         }
@@ -31,7 +39,7 @@ function App() {
         alert("Please install MetaMask!");
       }
     };
-
+  
     init();
   }, []);
 
@@ -41,8 +49,8 @@ function App() {
       {account ? <p>Connected as: {account}</p> : <p>Not connected...</p>}
       {contract ? (
         <>
-          {/* Render the Register Candidate form only if contract is available */}
           <RegisterCandidate contract={contract} />
+          <RegisterVoter contract={contract} />
           <CandidatesList contract={contract} />
         </>
       ) : (
