@@ -20,6 +20,8 @@ export default function RegisterCandidate({ contract }) {
       const tx = await contract.registerCandidate(name, cid);
       await tx.wait(); // Wait for transaction confirmation
 
+      window.location.reload();
+
       alert("Candidate registered successfully!");
 
       // Reset form fields

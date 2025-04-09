@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { CONTRACT_ABI, CONTRACT_ADDRESS } from "./contract-config";
 import RegisterCandidate from "./components/RegisterCandidate";
+import CandidatesList from "./components/CandidateList";
 
 function App() {
   const [contract, setContract] = useState(null);
@@ -42,6 +43,7 @@ function App() {
         <>
           {/* Render the Register Candidate form only if contract is available */}
           <RegisterCandidate contract={contract} />
+          <CandidatesList contract={contract} />
         </>
       ) : (
         <p>Connecting to the contract...</p>
